@@ -43,33 +43,3 @@ Scripts locate the repo via `SCRIPT_DIR` / `REPO_ROOT` (no hard-coded code path)
 ## data access
 
 Daily downscaled fields are written as NetCDF. There are two resolutions per variable.
-
-**0.05° (stage 1) products**
-
-```python
-import xarray as xr
-
-tmax_005 = xr.open_dataset(
-    "/public/home/ggao001/users/xhang/Projects/zcn/tmax/05unet/02exp/unet005/outputs/tmax_005_final.nc"
-)
-tmin_005 = xr.open_dataset(
-    "/public/home/ggao001/users/xhang/Projects/zcn/tmin/05unet/02exp/unet005/outputs/tmin_005_final.nc"
-)
-```
-
-**0.01° (stage 2) products**
-
-```python
-import xarray as xr
-
-tmax_001 = xr.open_dataset(
-    "/public/home/ggao001/users/xhang/Projects/zcn/tmax/05unet/02exp/unet001/outputs/tmax_001_final.nc"
-)
-tmin_001 = xr.open_dataset(
-    "/public/home/ggao001/users/xhang/Projects/zcn/tmin/05unet/02exp/unet001/outputs/tmin_001_final.nc"
-)
-```
-
-The path pattern is `{ZCN}/{tmax|tmin}/05unet/02exp/{unet005|unet001}/outputs/{var}_{005|001}_final.nc`. Intermediate climatology, residuals, and model weights live under the matching `interim/` and `models/` directories. Temporal hold-out metrics are written to `metrics/` (for example `tmax_001_holdout_2016_2025.csv`).
-
-Input predictors and coastal masks come from `CN_YANHAI_DOWN/01data` (static predictors, land masks, and the 0.25° CN05.1 daily fields used as the coarse target).
