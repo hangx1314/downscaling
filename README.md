@@ -18,7 +18,6 @@ code/
 ## Setup
 
 ```bash
-# optional: conda env `cn` already used on the cluster
 pip install -r requirements.txt
 ```
 
