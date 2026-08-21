@@ -29,8 +29,6 @@ Override with env vars:
 
 | Variable | Meaning | Default |
 |---|---|---|
-| `ZCN` | parent project root for data/exp | `/public/home/ggao001/users/xhang/Projects/zcn` |
-| `PYTHON_BIN` | Python interpreter | conda `cn` python |
 | `CLIM_MONTHS` | months to train in parallel | `5 6 7 8 9` |
 | `NPROC` | parallel GPU workers | `#GPUs` |
 
