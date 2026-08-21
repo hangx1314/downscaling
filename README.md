@@ -1,7 +1,7 @@
-# warm-season temperature downscaling for coastal China
+# U-Net Downscaling of Daily Maximum and Minimum Temperature over Coastal China
 
 
-This repository includes our tools, scripts, and U-Net models for two-stage climate downscaling of daily **tmax** and **tmin** over coastal China (0.25° → 0.05° → 0.01°), restricted to the warm season (May–September). Training uses monthly climatology for 1961–2015; independent temporal hold-out evaluation covers 2016–2025.
+This directory contains a two-stage spatial downscaling workflow for daily maximum temperature (Tmax) and daily minimum temperature (Tmin) over coastal China. The workflow first downscales daily temperature from 0.25° to 0.05°, then from 0.05° to 0.01°. U-Net models predict the monthly climatology, daily anomalies are interpolated to the target grid, and residual and scale-consistency corrections ensure that the high-resolution results remain consistent with the coarser source data after aggregation.
 
 
 ## development
