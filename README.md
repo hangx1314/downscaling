@@ -109,11 +109,8 @@ Tmax and Tmin can be processed independently. For either variable, complete the 
 
 Daily 0.01° datasets can be very large. Validate the complete workflow first with a short time range, a small spatial subset, and a small `--time-chunk`. Before a full run, confirm that all inputs use compatible time axes, coordinate orientation, units, and missing-data masks.
 
-## 7. Known missing modules in this code-only package
 
-Scripts that depend on these modules currently fail at startup with `ModuleNotFoundError`. This affects anomaly and residual interpolation, initial-field construction, some correction steps, and temporal-holdout evaluation. Copy the missing modules from the complete project into `common/` before running the full workflow. Installing `requirements.txt` alone will not resolve these imports.
-
-## 8. Troubleshooting
+## 7. Troubleshooting
 
 ### `FileNotFoundError`
 
