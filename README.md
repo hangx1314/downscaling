@@ -4,7 +4,6 @@ Warm-season U-Net pipeline for coastal China temperature downscaling(0.25° → 
 ## Layout
 
 ```
-code/
   common/                 # shared helpers (predictors, month filters, merge)
   tmax/
     step02_unet005/       # 0.25 → 0.05 stage
