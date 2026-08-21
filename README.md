@@ -1,5 +1,5 @@
 # UNet warm-season downscaling (tmax / tmin)
-Warm-season (May–Sep) U-Net pipeline for coastal China temperature downscaling(0.25° → 0.05° → 0.01°). 
+Warm-season U-Net pipeline for coastal China temperature downscaling(0.25° → 0.05° → 0.01°). 
 
 ## Layout
 
