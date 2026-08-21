@@ -14,3 +14,27 @@ code/
     step03_unet001/
   requirements.txt
 ```
+
+## Setup
+
+```bash
+# optional: conda env `cn` already used on the cluster
+pip install -r requirements.txt
+```
+
+## Run
+
+Paths for experiment outputs still default to the cluster `zcn/.../02exp` tree.
+Override with env vars:
+
+| Variable | Meaning | Default |
+|---|---|---|
+| `ZCN` | parent project root for data/exp | `/public/home/ggao001/users/xhang/Projects/zcn` |
+| `PYTHON_BIN` | Python interpreter | conda `cn` python |
+| `CLIM_MONTHS` | months to train in parallel | `5 6 7 8 9` |
+| `NPROC` | parallel GPU workers | `#GPUs` |
+
+## Notes
+
+- Large NetCDF / model weights are gitignored; keep them outside this repo.
+- Training scripts import helpers from `common/` via `sys.path`.
