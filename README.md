@@ -116,10 +116,6 @@ Daily 0.01° datasets can be very large. Validate the complete workflow first wi
 
 The embedded default data paths are not portable. Pass explicit input, output, model, and mask paths to every script, and confirm that each upstream output exists before starting the next step.
 
-### `ModuleNotFoundError: ..._chunk_tools` or `eval_temporal_holdout`
-
-The code-only package lacks the internal modules listed in Section 9. Restore them from the complete project; do not install unrelated packages with similar names from PyPI.
-
 ### Predictor and target grids do not match
 
 The training scripts require identical latitude and longitude arrays and grid shapes. Inspect the coordinates with xarray and sort, crop, or regrid the data during preprocessing when necessary.
