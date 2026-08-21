@@ -91,4 +91,57 @@ A predictor file may contain:
 - Optional yearly variables with dimensions `(year, lat, lon)`;
 - An optional `land_mask`; if absent, the full grid is treated as valid.
 
+## 5. Execution order
+
+Tmax and Tmin can be processed independently. For either variable, complete the 0.25°→0.05° stage before starting the 0.05°→0.01° stage.
+
+
+## 6. Important options and resource considerations
+
+- `--device {auto,cpu,cuda}`: training or prediction device;
+- `--epochs`, `--patience`, `--lr`, `--weight-decay`: optimization and early-stopping settings;
+- `--base-channels`: base U-Net channel count; this strongly affects GPU memory usage;
+- `--test-size`, `--random-state`: internal spatial split settings used during training;
+- `--tile-size`, `--overlap`: tile dimensions and overlap for prediction on large grids;
+- `--time-chunk`: time-block size for daily interpolation, aggregation, correction, or writing;
+- `--train-months`: comma-separated modeled months, such as `5,6,7,8,9`;
+- `--clim-start-year`, `--clim-end-year`: climatology baseline period.
+
+Daily 0.01° datasets can be very large. Validate the complete workflow first with a short time range, a small spatial subset, and a small `--time-chunk`. Before a full run, confirm that all inputs use compatible time axes, coordinate orientation, units, and missing-data masks.
+
+## 7. Known missing modules in this code-only package
+
+Scripts that depend on these modules currently fail at startup with `ModuleNotFoundError`. This affects anomaly and residual interpolation, initial-field construction, some correction steps, and temporal-holdout evaluation. Copy the missing modules from the complete project into `common/` before running the full workflow. Installing `requirements.txt` alone will not resolve these imports.
+
+## 8. Troubleshooting
+
+### `FileNotFoundError`
+
+The embedded default data paths are not portable. Pass explicit input, output, model, and mask paths to every script, and confirm that each upstream output exists before starting the next step.
+
+### `ModuleNotFoundError: ..._chunk_tools` or `eval_temporal_holdout`
+
+The code-only package lacks the internal modules listed in Section 9. Restore them from the complete project; do not install unrelated packages with similar names from PyPI.
+
+### Predictor and target grids do not match
+
+The training scripts require identical latitude and longitude arrays and grid shapes. Inspect the coordinates with xarray and sort, crop, or regrid the data during preprocessing when necessary.
+
+### CUDA out-of-memory errors
+
+Reduce `--base-channels`, reduce `--tile-size` during prediction, or use `--device cpu`. For memory errors during daily processing, reduce `--time-chunk`.
+
+### Output contains only warm-season months
+
+The default configuration restricts monthly and daily intermediates to May–September. To change the final output months, edit `TRAIN_MONTHS` in `common/split_config.py`. Passing `--train-months` only to selected training or prediction scripts is insufficient because shared filters are used throughout the workflow. Regenerate all downstream products after changing the configuration.
+
+### Minimal checks
+
+```bash
+python -m compileall .
+python tmax/step01_unet005/00_make_clim_anom_025.py --help
+python common/merge_clim_monthly.py --help
+```
+
+A successful syntax check only confirms that Python can parse the files. It does not confirm that the required data, internal modules, or runtime environment are complete.
 
