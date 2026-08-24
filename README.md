@@ -75,14 +75,6 @@ Create climatology/anomalies → train monthly models → predict climatology
 → enforce parent-grid consistency → evaluate
 ```
 
-Use `--help` to inspect the parameters of any script and pass explicit data and output paths. For example:
-
-```bash
-python tmax/rf/step02_rf005/01_train_rf005_monthly.py --help
-python tmax/xgb/step02_xgb005/01_train_xgb005_monthly.py --help
-python tmax/unet/step02_unet005/01_train_unet005_monthly.py --help
-```
-
 The interpolation baselines can run one or all supported methods:
 
 ```bash
