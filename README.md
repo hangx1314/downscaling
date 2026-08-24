@@ -1,4 +1,4 @@
-# Coastal China Daily Temperature Downscaling
+# Daily Temperature Downscaling
 
 This repository contains code for downscaling daily maximum temperature (Tmax) and minimum temperature (Tmin) over coastal China from 0.25° to 0.05° and then to 0.01°. It supports machine-learning downscaling, conventional spatial interpolation, residual correction, scale-consistency correction, and warm-season validation.
 
