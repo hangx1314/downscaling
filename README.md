@@ -100,5 +100,3 @@ Use the corresponding Tmin script for minimum temperature.
 ## 6. Validation and implementation notes
 
 `validation/metrics_core.py` provides shared formulas for Bias, MAE, RMSE, R², correlation, standard-deviation ratio, pattern similarity score, percentile bias, heat-event occurrence and intensity statistics, diurnal temperature range, station-level evaluation, and parent-grid aggregation checks. These routines support comparison among RF, XGB, U-Net, and interpolation baselines during the 2016–2025 technical validation period.
-
-The current code tree imports several project-specific modules that are not included in `common/`: `interp_chunk_tools.py`, `build_raw_chunk_tools.py`, `correct_chunk_tools.py`, and `eval_temporal_holdout.py`. Restore these files from the complete project before running affected pipeline and evaluation scripts. A successful syntax check does not confirm that these runtime modules or input datasets are available.
