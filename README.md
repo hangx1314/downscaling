@@ -18,7 +18,7 @@ The RF, XGB, and U-Net pipelines use the same general sequence: predict the high
 ## 2. Directory structure
 
 ```text
-00code/
+code/
 ├─ common/          # Shared configuration and data-processing utilities
 ├─ interpolation/   # Bilinear, IDW, and kriging baselines
 ├─ validation/      # Shared validation metric formulas
