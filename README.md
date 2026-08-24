@@ -1,57 +1,55 @@
-# U-Net Downscaling of Daily Maximum and Minimum Temperature over Coastal China
+# Coastal China Daily Temperature Downscaling
 
+This repository contains code for downscaling daily maximum temperature (Tmax) and minimum temperature (Tmin) over coastal China from 0.25° to 0.05° and then to 0.01°. It supports machine-learning downscaling, conventional spatial interpolation, residual correction, scale-consistency correction, and warm-season validation.
 
-This directory contains a two-stage spatial downscaling workflow for daily maximum temperature (Tmax) and daily minimum temperature (Tmin) over coastal China. The workflow first downscales daily temperature from 0.25° to 0.05°, then from 0.05° to 0.01°. U-Net models predict the monthly climatology, daily anomalies are interpolated to the target grid, and residual and scale-consistency corrections ensure that the high-resolution results remain consistent with the coarser source data after aggregation.
+> This is a code-only package. Input data, masks, trained models, and outputs are not included. Most scripts contain default paths from the original Linux environment (`/public/home/...`); use command-line arguments to provide paths for your own system.
 
+## 1. Methods
 
-## 1. Workflow overview
+The repository includes the following downscaling approaches:
 
-Tmax and Tmin use the same processing chain:
+- **Random Forest (RF):** monthly models trained with repeated spatial block cross-validation;
+- **XGBoost (XGB):** monthly boosted-tree models with repeated spatial block cross-validation;
+- **U-Net:** convolutional models for spatially structured monthly climatology prediction;
+- **Bilinear interpolation, inverse distance weighting (IDW), and local ordinary kriging:** direct 0.25°→0.01° interpolation baselines for Tmax and Tmin.
 
-```text
-0.25° daily temperature
-  ├─ Calculate the 1961–2015 monthly climatology and daily anomalies
-  ├─ Predict the 0.05° monthly climatology with U-Net
-  ├─ Interpolate 0.25° daily anomalies to 0.05°
-  ├─ Monthly climatology + daily anomalies → initial 0.05° field
-  ├─ Aggregate to 0.25°, calculate residuals, and interpolate residuals
-  └─ Apply residual and strict scale-consistency corrections → final 0.05° field
-        │
-        └─ Use the final 0.05° field as input and repeat the workflow
-           → final 0.01° field
-```
-
-Default temporal settings are defined in `common/split_config.py`:
-
-- Climatology and training baseline: 1961–2015;
-- Independent temporal holdout period: 2016–2025;
-- Default U-Net training months: May through September;
-- Configured predictor-year range: 1985–2025.
-
+The RF, XGB, and U-Net pipelines use the same general sequence: predict the high-resolution monthly climatology, interpolate daily anomalies, reconstruct the daily field, apply residual correction, and enforce consistency with the coarser parent grid.
 
 ## 2. Directory structure
 
 ```text
-├─ common/                         # Shared configuration and utilities
-│  ├─ split_config.py              # Time ranges and modeled months
-│  ├─ clim_month_tools.py          # Month filtering and parsing utilities
-│  ├─ predictor_tools.py           # Predictor loading and standardization
-│  ├─ mask_loader.py               # Coastal-mask loading and grid alignment
-│  ├─ mask_fill.py                 # Nearest-neighbor filling inside masks
-│  └─ merge_clim_monthly.py        # Merge independently trained month outputs
+00code/
+├─ common/          # Shared configuration and data-processing utilities
+├─ interpolation/   # Bilinear, IDW, and kriging baselines
+├─ validation/      # Shared validation metric formulas
 ├─ tmax/
-│  ├─ step01_unet005/              # Tmax: 0.25° → 0.05°
-│  └─ step02_unet001/              # Tmax: 0.05° → 0.01°
+│  ├─ rf/           # RF pipelines for Tmax
+│  ├─ xgb/          # XGBoost pipelines for Tmax
+│  └─ unet/         # U-Net pipelines for Tmax
 ├─ tmin/
-│  ├─ step01_unet005/              # Tmin: 0.25° → 0.05°
-│  └─ step02_unet001/              # Tmin: 0.05° → 0.01°
-├─ requirements.txt
-└─ README.md
+│  ├─ rf/           # RF pipelines for Tmin
+│  ├─ xgb/          # XGBoost pipelines for Tmin
+│  └─ unet/         # U-Net pipelines for Tmin
+└─ requirements.txt
 ```
 
-## 3. Environment setup
+Within each machine-learning method, `step02_*005` performs 0.25°→0.05° downscaling and `step03_*001` performs 0.05°→0.01° downscaling. Run scripts inside each stage in numeric order.
 
-Python 3.9 or later is recommended. Install the dependencies in an isolated virtual environment:
+## 3. Data and temporal configuration
+
+Required inputs include 0.25° daily Tmax/Tmin NetCDF data, predictor fields on the required grids, and coastal masks for the target grids. Predictor and target coordinates must be spatially aligned.
+
+The default settings in `common/split_config.py` are:
+
+- 1961–2015: climatology and model-training baseline;
+- 2016–2025: **temporal holdout period for model comparison and technical validation**;
+- May–September: default modeled and output months.
+
+Changing the final output months requires updating `TRAIN_MONTHS` in `common/split_config.py` and regenerating downstream products.
+
+## 4. Installation
+
+Python 3.9 or later is recommended.
 
 ```bash
 python -m venv .venv
@@ -64,77 +62,46 @@ source .venv/bin/activate
 
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-```
-
-The primary dependencies are NumPy, pandas, xarray, netCDF4, PyTorch, and scikit-learn. `common/mask_fill.py` can use SciPy for efficient nearest-neighbor filling, so installing it is recommended:
-
-```bash
 python -m pip install scipy
 ```
 
-For GPU training, install the PyTorch build that matches the system's CUDA version.
+SciPy is used by the interpolation and nearest-neighbor filling code but is not currently listed in `requirements.txt`. For GPU-based U-Net training, install a PyTorch build compatible with the local CUDA version.
 
-## 4. Required input data
+## 5. Running the workflows
 
-At minimum, the workflow requires:
+For RF, XGB, or U-Net, select `tmax` or `tmin`, complete the `step02_*005` stage, and then run `step03_*001`. Typical numbered steps are:
 
-1. Coastal daily Tmax and/or Tmin NetCDF data at 0.25° resolution covering the required years;
-2. Predictor NetCDF files on the 0.25°, 0.05°, and 0.01° grids;
-3. Coastal or land-mask NetCDF files on the 0.05° and 0.01° grids;
-4. Sufficient disk space for daily NetCDF intermediates, models, metrics, and final products.
-
-Input data should have time, latitude, and longitude dimensions. Common coordinate names such as `time`, `lat`/`latitude`/`y`, and `lon`/`longitude`/`x` are detected automatically. If a target variable cannot be detected, specify it with the relevant `--var`, `--target-var`, `--clim-var`, `--anom-var`, `--raw-var`, or `--res-var` option.
-
-A predictor file may contain:
-
-- Static variables with dimensions `(lat, lon)`;
-- Optional yearly variables with dimensions `(year, lat, lon)`;
-- An optional `land_mask`; if absent, the full grid is treated as valid.
-
-## 5. Execution order
-
-Tmax and Tmin can be processed independently. For either variable, complete the 0.25°→0.05° stage before starting the 0.05°→0.01° stage.
-
-
-## 6. Important options and resource considerations
-
-- `--device {auto,cpu,cuda}`: training or prediction device;
-- `--epochs`, `--patience`, `--lr`, `--weight-decay`: optimization and early-stopping settings;
-- `--base-channels`: base U-Net channel count; this strongly affects GPU memory usage;
-- `--test-size`, `--random-state`: internal spatial split settings used during training;
-- `--tile-size`, `--overlap`: tile dimensions and overlap for prediction on large grids;
-- `--time-chunk`: time-block size for daily interpolation, aggregation, correction, or writing;
-- `--train-months`: comma-separated modeled months, such as `5,6,7,8,9`;
-- `--clim-start-year`, `--clim-end-year`: climatology baseline period.
-
-Daily 0.01° datasets can be very large. Validate the complete workflow first with a short time range, a small spatial subset, and a small `--time-chunk`. Before a full run, confirm that all inputs use compatible time axes, coordinate orientation, units, and missing-data masks.
-
-
-## 7. Troubleshooting
-
-### `FileNotFoundError`
-
-The embedded default data paths are not portable. Pass explicit input, output, model, and mask paths to every script, and confirm that each upstream output exists before starting the next step.
-
-### Predictor and target grids do not match
-
-The training scripts require identical latitude and longitude arrays and grid shapes. Inspect the coordinates with xarray and sort, crop, or regrid the data during preprocessing when necessary.
-
-### CUDA out-of-memory errors
-
-Reduce `--base-channels`, reduce `--tile-size` during prediction, or use `--device cpu`. For memory errors during daily processing, reduce `--time-chunk`.
-
-### Output contains only warm-season months
-
-The default configuration restricts monthly and daily intermediates to May–September. To change the final output months, edit `TRAIN_MONTHS` in `common/split_config.py`. Passing `--train-months` only to selected training or prediction scripts is insufficient because shared filters are used throughout the workflow. Regenerate all downstream products after changing the configuration.
-
-### Minimal checks
-
-```bash
-python -m compileall .
-python tmax/step01_unet005/00_make_clim_anom_025.py --help
-python common/merge_clim_monthly.py --help
+```text
+Create climatology/anomalies → train monthly models → predict climatology
+→ interpolate anomalies → build the initial daily field
+→ calculate/interpolate residuals → apply residual correction
+→ enforce parent-grid consistency → evaluate
 ```
 
-A successful syntax check only confirms that Python can parse the files. It does not confirm that the required data, internal modules, or runtime environment are complete.
+Use `--help` to inspect the parameters of any script and pass explicit data and output paths. For example:
 
+```bash
+python tmax/rf/step02_rf005/01_train_rf005_monthly.py --help
+python tmax/xgb/step02_xgb005/01_train_xgb005_monthly.py --help
+python tmax/unet/step02_unet005/01_train_unet005_monthly.py --help
+```
+
+The interpolation baselines can run one or all supported methods:
+
+```bash
+python interpolation/interpolate_tmax_025_to_001_methods.py \
+  --input /path/to/tmax_025.nc \
+  --mask /path/to/coastal001mask.nc \
+  --methods all \
+  --out-bilinear /path/to/tmax_001_bilinear.nc \
+  --out-idw /path/to/tmax_001_idw.nc \
+  --out-kriging /path/to/tmax_001_kriging.nc
+```
+
+Use the corresponding Tmin script for minimum temperature.
+
+## 6. Validation and implementation notes
+
+`validation/metrics_core.py` provides shared formulas for Bias, MAE, RMSE, R², correlation, standard-deviation ratio, pattern similarity score, percentile bias, heat-event occurrence and intensity statistics, diurnal temperature range, station-level evaluation, and parent-grid aggregation checks. These routines support comparison among RF, XGB, U-Net, and interpolation baselines during the 2016–2025 technical validation period.
+
+The current code tree imports several project-specific modules that are not included in `common/`: `interp_chunk_tools.py`, `build_raw_chunk_tools.py`, `correct_chunk_tools.py`, and `eval_temporal_holdout.py`. Restore these files from the complete project before running affected pipeline and evaluation scripts. A successful syntax check does not confirm that these runtime modules or input datasets are available.
