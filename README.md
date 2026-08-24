@@ -12,7 +12,7 @@ The repository includes the following downscaling approaches:
 - **U-Net:** convolutional models for spatially structured monthly climatology prediction;
 - **Bilinear interpolation, inverse distance weighting (IDW), and local ordinary kriging:** direct 0.25°→0.01° interpolation baselines for Tmax and Tmin.
 
-The RF, XGB, and U-Net pipelines use the same general sequence: predict the high-resolution monthly climatology, interpolate daily anomalies, reconstruct the daily field, apply residual correction, and enforce consistency with the coarser parent grid.
+The RF, XGB, and U-Net pipelines use the same general sequence: predict the high-resolution monthly climatology, interpolate daily anomalies, reconstruct the daily field.
 
 ## 2. Directory structure
 
