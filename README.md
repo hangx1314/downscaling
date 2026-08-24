@@ -2,7 +2,6 @@
 
 This repository contains code for downscaling daily maximum temperature (Tmax) and minimum temperature (Tmin) over coastal China from 0.25° to 0.05° and then to 0.01°. It supports machine-learning downscaling, conventional spatial interpolation, residual correction, scale-consistency correction, and warm-season validation.
 
-> This is a code-only package. Input data, masks, trained models, and outputs are not included. Most scripts contain default paths from the original Linux environment (`/public/home/...`); use command-line arguments to provide paths for your own system.
 
 ## 1. Methods
 
