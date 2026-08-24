@@ -44,8 +44,6 @@ The default settings in `common/split_config.py` are:
 - 2016–2025: **temporal holdout period for model comparison and technical validation**;
 - May–September: default modeled and output months.
 
-Changing the final output months requires updating `TRAIN_MONTHS` in `common/split_config.py` and regenerating downstream products.
-
 ## 4. Installation
 
 Python 3.9 or later is recommended.
