@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: If you use this software, please cite the associated paper.
+title: Coastal China Daily Temperature Downscaling
+authors:
+  - family-names: Hang
+    given-names: X.
+license: MIT
+repository-code: ""
+abstract: >
+  Code for downscaling daily Tmax and Tmin over coastal China from 0.25°
+  to 0.05° and 0.01° using Random Forest, XGBoost, U-Net, and interpolation
+  baselines.

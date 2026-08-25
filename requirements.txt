@@ -1,0 +1,9 @@
+numpy
+xarray
+netCDF4
+torch
+scikit-learn
+xgboost
+scipy
+joblib
+pandas
