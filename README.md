@@ -130,6 +130,4 @@ Use `interpolation/interpolate_tmin_025_to_001_methods.py` for Tmin.
 
 `validation/metrics_core.py` provides Bias, MAE, RMSE, R², correlation, standard-deviation ratio (SDR), Perkins skill score (PSS), percentile bias, heat-event occurrence and intensity statistics, diurnal temperature range, station-level evaluation, and parent-grid aggregation checks.
 
-Station-level SDR uses only dates that are valid in both the model and the observation. Pooled (all-station) metrics already used that pairwise filter.
-
 The 2016–2025 window is a temporal holdout for technical comparison. CN05.1 and station observations are not independent samples of one another.
