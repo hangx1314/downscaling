@@ -1,0 +1,25 @@
+# Explicit predictor whitelist used by RF, XGBoost, and U-Net (22 variables).
+# land_mask is used only as a spatial mask, not as a model input.
+predictor_names:
+  - elev_mean
+  - elev_std
+  - relief
+  - slope_mean
+  - aspect_sin
+  - aspect_cos
+  - dem_valid_fraction
+  - clcd
+  - dist_coast_km
+  - coast_density
+  - dist_water_km
+  - water_density
+  - cropland_fraction
+  - forest_fraction
+  - shrub_fraction
+  - grassland_fraction
+  - water_fraction
+  - snow_ice_fraction
+  - barren_fraction
+  - impervious_fraction
+  - wetland_fraction
+  - is_coastal
