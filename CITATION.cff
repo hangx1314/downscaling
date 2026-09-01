@@ -1,12 +1,17 @@
 cff-version: 1.2.0
-message: If you use this software, please cite the associated paper.
-title: Coastal China Daily Temperature Downscaling
+message: "If you use this code, please cite it using the metadata below."
+title: "Code for Daily 0.01° warm-season maximum and minimum air temperatures for coastal mainland China"
+type: software
+
 authors:
-  - family-names: Hang
-    given-names: X.
-license: MIT
-repository-code: ""
-abstract: >
-  Code for downscaling daily Tmax and Tmin over coastal China from 0.25°
-  to 0.05° and 0.01° using Random Forest, XGBoost, U-Net, and interpolation
-  baselines.
+  - given-names: "Xu"
+    family-names: "Hang"
+    affiliation: "College of Oceanography and Ecological Science, Shanghai Ocean University"
+
+ - given-names: "Jie"
+    family-names: "Chen"
+    affiliation: "College of Oceanography and Ecological Science, Shanghai Ocean University"
+    orcid: "https://orcid.org/0000-0001-7403-9942"
+
+repository-code: "https://github.com/hangx1314/downscaling"
+license: "MIT"
